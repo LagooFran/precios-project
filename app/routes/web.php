@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Livewire\Inicio;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'Inicio:class');
+Route::get("/", Inicio::class);
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

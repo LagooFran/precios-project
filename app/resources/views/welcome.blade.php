@@ -18,13 +18,7 @@
             @if (Route::has('login'))
                 <livewire:welcome.navigation />
             @endif
-            <div>
-                <form>
-                    <label class="text-white">Que producto quiere buscar?</label>
-                    <input class="" type="text" name="producto">
-                    <button class="text-white hover:text-red-400" type="submit">Buscar</button>
-                </form>
-            </div>
+           
         </div>  
     </body>
 </html>
