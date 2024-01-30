@@ -10,12 +10,15 @@ use Symfony\Component\HttpClient\HttpClient;
 use App\Models\Product;
 use Exception;
 
+use function Livewire\Volt\mount;
+
 #[Layout("layouts.app")]
 class Inicio extends Component
 {
-    public $product = "";
     public $productsAnswer = array();
+    public $product = "";
     public $searched = false;
+
 
 
     public function render()
@@ -24,7 +27,6 @@ class Inicio extends Component
     }
 
     public function search(){
-        $this->productsAnswer = array();
         $this->searched = false;
         $prods = [];
         $coto = [];
@@ -55,6 +57,7 @@ class Inicio extends Component
                 $discount = 'Yes';
                 $discountText = strstr($discountText, 'OFERTA');
             }
+            
             $newProd = new Product([
                 "name"=> $name,
                 "price"=> $price,
@@ -65,8 +68,8 @@ class Inicio extends Component
             ]);
             array_push($coto, $newProd);
         }
-        
-        $this->productsAnswer = $coto;
-        $this->searched = true;
+
+        $this -> productsAnswer = $coto;
+        $this -> searched = true;
     }
 }
