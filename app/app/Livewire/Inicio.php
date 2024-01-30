@@ -14,12 +14,18 @@ use Exception;
 class Inicio extends Component
 {
     public $product = "";
+    public $productsAnswer = array();
+    public $searched = false;
+
+
     public function render()
     {
         return view('livewire.inicio');
     }
 
     public function search(){
+        $this->productsAnswer = array();
+        $this->searched = false;
         $prods = [];
         $coto = [];
         $browser = new HttpBrowser(HttpClient::create()); 
@@ -59,8 +65,8 @@ class Inicio extends Component
             ]);
             array_push($coto, $newProd);
         }
-        dd($coto);
-
-
+        
+        $this->productsAnswer = $coto;
+        $this->searched = true;
     }
 }

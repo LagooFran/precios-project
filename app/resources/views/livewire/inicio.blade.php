@@ -5,4 +5,10 @@
         <input class="" type="text" name="product" wire:model="product">
         <button class="text-green-200 hover:text-red-400" type="submit">Buscar</button>
     </form>
+    
+    @if ($searched)
+        @foreach($productsAnswer as $product)
+        <p class="text-green-200 text-2xl">{{$product->price}}</p>
+        @endforeach
+    @endif
 </div>
