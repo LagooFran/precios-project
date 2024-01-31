@@ -89,7 +89,19 @@ class Inicio extends Component
             }
         }
 
-        $this->productsAnswer = $coto;
+
+        // carrefour
+
+        $crawler = $browser->request('GET', 'https://www.carrefour.com.ar/arroz?_q=arroz&map=ft');
+
+
+
+
+        // merge all products and sort them by price
+
+        array_push($this->productsAnswer, $coto);
+
+        // show more button functionality
 
         if (count($this->productsAnswer) > 5) {
             $this->moreThan5 = true;
