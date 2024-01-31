@@ -9,7 +9,7 @@
 
     @if($searched)
         @foreach($productsAnswer as $product)
-            <p class="text-green-200 text-2xl">{{$product -> name}}<p>
+            <p class="text-green-200 text-2xl" wire:key="{{$product['name']}}">{{$product['name']}}<p>
         @endforeach
     @endif
 </div>
