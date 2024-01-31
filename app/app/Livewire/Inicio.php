@@ -61,7 +61,6 @@ class Inicio extends Component
             try {
                 $crawlerProd = new Crawler($prod);
                 $name = $crawlerProd->filter("[class='descrip_full']")->text();
-                    "img" => $img,
 
                 if (similar_text(strtolower($name), strtolower(str_replace(' ', '', $this->product))) >= strlen(str_replace(' ', '', $this->product)) - 1) {
                     $price = $crawlerProd->filter("[class='atg_store_newPrice']")->text();
