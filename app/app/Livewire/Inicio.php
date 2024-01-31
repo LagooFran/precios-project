@@ -18,6 +18,8 @@ class Inicio extends Component
     public $productsAnswer = array();
     public $product = "";
     public $searched = false;
+    public $pos = 5;
+    public $moreThan5 = false;
 
 
 
@@ -26,10 +28,14 @@ class Inicio extends Component
         return view('livewire.inicio');
     }
 
+
+
     public function search()
     {
         $this->productsAnswer = array();
         $this->searched = false;
+        $this->moreThan5 = false;
+        $this->pos = 5;
         $prods = [];
         $coto = [];
         $browser = new HttpBrowser(HttpClient::create());
@@ -55,33 +61,49 @@ class Inicio extends Component
             try {
                 $crawlerProd = new Crawler($prod);
                 $name = $crawlerProd->filter("[class='descrip_full']")->text();
-                $price = $crawlerProd->filter("[class='atg_store_newPrice']")->text();
-                $img = $crawlerProd->filter("[class='atg_store_productImage'] > img")->attr('src');
-                $discountText = $crawlerProd->filter("[class='info_discount']")->children()->text();
-                if ($discountText == $price) {
-                    $discount = 'No';
-                    $discountText = 'None';
-                } else {
-                    $discount = 'Yes';
-                    $discountText = strstr($discountText, 'OFERTA');
-                }
-
-                $newProd = ([
-                    "name" => $name,
-                    "price" => $price,
-                    "storeId" => 'coto',
                     "img" => $img,
-                    "discount" => $discount,
-                    "discountText" => $discountText
-                ]);
 
-                array_push($coto, $newProd);
+                if (similar_text(strtolower($name), strtolower(str_replace(' ', '', $this->product))) >= strlen(str_replace(' ', '', $this->product)) - 1) {
+                    $price = $crawlerProd->filter("[class='atg_store_newPrice']")->text();
+                    $img = $crawlerProd->filter("[class='atg_store_productImage'] > img")->attr('src');
+                    $discountText = $crawlerProd->filter("[class='info_discount']")->children()->text();
+                    if ($discountText == $price) {
+                        $discount = 'No';
+                        $discountText = 'None';
+                    } else {
+                        $discount = 'Yes';
+                        $discountText = strstr($discountText, 'OFERTA');
+                    }
+
+                    $newProd = ([
+                        "name" => $name,
+                        "price" => $price,
+                        "storeId" => 'coto',
+                        "img" => $img,
+                        "discount" => $discount,
+                        "discountText" => $discountText
+                    ]);
+
+                    array_push($coto, $newProd);
+                }
             } catch (Exception $e) {
             }
         }
 
-        dd($coto);
         $this->productsAnswer = $coto;
+
+        if (count($this->productsAnswer) > 5) {
+            $this->moreThan5 = true;
+        }
+
+
+        usort($this->productsAnswer, function ($a, $b) {
+            if ($a['price'] == $b['price']) {
+                return 0;
+            }
+            return ($a['price'] < $b['price']) ? -1 : 1;
+        });
+
         $this->searched = true;
     }
 
@@ -89,5 +111,14 @@ class Inicio extends Component
     {
         $this->productsAnswer = array();
         $this->searched = false;
+        $this->moreThan5 = false;
+    }
+
+    public function showMore()
+    {
+        $this->pos = $this->pos + 5;
+        if (count($this->productsAnswer) < $this->pos) {
+            $this->moreThan5 = false;
+        }
     }
 }

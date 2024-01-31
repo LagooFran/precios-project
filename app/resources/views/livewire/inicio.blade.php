@@ -8,8 +8,18 @@
     <button class="text-green-200 hover:text-red-400" wire:click="back">Volver</button>
 
     @if($searched)
-        @foreach($productsAnswer as $product)
-            <p class="text-green-200 text-2xl" wire:key="{{$product['name']}}">{{$product['name']}}<p>
+    <div class="flex flex-col gap-3">
+        @foreach(array_slice($productsAnswer,0,$pos) as $product)
+        <div wire:key="{{$product['name']}}" class="flex flex-col">
+            <p class="text-green-200 text-2xl">{{$product['name']}}<p>
+            <p class="text-green-200 text-2xl">{{$product['price']}}<p>
+            <p class="text-green-200 text-2xl">{{$product['discountText']}}<p>
+        </div>
         @endforeach
+    </div>
+    @endif
+    
+    @if($moreThan5)
+        <button class="text-green-200 hover:text-red-400" wire:click="showMore">Mostrar mas</button>
     @endif
 </div>
