@@ -96,7 +96,7 @@ class Inicio extends Component
         $prods = [];
 
         // carrefour
-        $browserFactory = new BrowserFactory('chromium-browser');
+        $browserFactory = new BrowserFactory('./chrome-linux/chrome');
         $browser = $browserFactory->createBrowser();
         $page = $browser->createPage();
         $page->setViewport(1920, 1080)->await();
