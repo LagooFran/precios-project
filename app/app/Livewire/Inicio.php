@@ -56,8 +56,6 @@ class Inicio extends Component
             $this->searchSuccessMaxiconsumo = false;
         }
 
-        $this->searchTest();
-
         //final step and show products
         $this->prepareAndShow();
     }
@@ -151,15 +149,6 @@ class Inicio extends Component
                 $this->loadProd($name, $price, $storeName, $img, $discount, $discountText, $mayoristPrice);
             }
         }
-    }
-
-    public function searchTest(){
-        set_time_limit($this->searchTimeLimit);
-        $browserNonHeadless = new HttpBrowser(HttpClient::create());
-
-        $crawler = $browserNonHeadless->request('GET', 'https://www.masonline.com.ar/' . $this->product . '?_q=' . $this->product . '&map=ft');
-
-        dd($crawler->filter("[class='vtex-product-summary-2-x-productBrand vtex-product-summary-2-x-brandName t-body']")->text());
     }
 
     public function checkIfSpecific($name)
