@@ -113,8 +113,25 @@ class Inicio extends Component
             
             if($this->checkIfSpecific($name)){
                 $price = $crawlerProd->filter("[class='price-box price-final_price']")->text();
+                //fix format price format
+
+                $price = preg_replace('/[\x00-\x1F\x80-\xFF]/', ' ', $price);
+                $price = strstr($price,'$');
+                $price = ltrim($price,'$');
+                $price = strstr($price,'$',true);
+                $price = trim($price);
+                $price = ''.$price.'$';
+                
+                
                 $img = $crawlerProd->filter("[class='product-image-photo']")->attr('src');
                 $mayoristPrice = $crawlerProd->filter("[class='price-box price-final_price highest']")->text();
+                
+                $mayoristPrice  = preg_replace('/[\x00-\x1F\x80-\xFF]/', ' ', $mayoristPrice );
+                $mayoristPrice = strstr($mayoristPrice ,'$');
+                $mayoristPrice = ltrim($mayoristPrice ,'$');
+                $mayoristPrice  = strstr($mayoristPrice ,'$',true);
+                $mayoristPrice  = trim($mayoristPrice );
+                $mayoristPrice  = ''. $mayoristPrice .'$';
 
                 $this->loadProd($name, $price, $storeName, $img, $discount, $discountText, $mayoristPrice);
             }
