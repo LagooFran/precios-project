@@ -7,9 +7,9 @@
     </form>
     <button class="text-green-200 hover:text-red-400" wire:click="back">Volver</button>
 
-    @if($searched)
+    @if($searchFinished)
     <div class="flex flex-col gap-3">
-        @foreach(array_slice($productsAnswer,0,$pos) as $product)
+        @foreach(array_slice($productsComplete,0,$productsShown) as $product)
         <div wire:key="{{$product['name']}}" class="flex flex-col">
             <p class="text-green-200 text-2xl">{{$product['name']}}<p>
             <p class="text-green-200 text-2xl">{{$product['price']}}<p>
