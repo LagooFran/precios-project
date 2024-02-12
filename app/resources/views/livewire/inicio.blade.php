@@ -8,6 +8,12 @@
     <button class="text-green-200 hover:text-red-400" wire:click="back">Volver</button>
 
     @if($searchFinished)
+    @if(!$searchSuccessCoto)
+    <p class="text-red-200 text-2xl">Error durante la busqueda de productos en: Coto<p>
+    @endif
+    @if(!$searchSuccessMaxiconsumo)
+    <p class="text-red-200 text-2xl">Error durante la busqueda de productos en: Maxiconsumo<p>
+    @endif
     <div class="flex flex-col gap-3">
         @foreach(array_slice($productsComplete,0,$productsShown) as $product)
         <div wire:key="{{$product['name']}}" class="flex flex-col">

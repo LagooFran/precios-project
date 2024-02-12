@@ -18,7 +18,9 @@ class Inicio extends Component
     public $searchFinished = false;
     public $moreThan5 = false;
     public $productsShown = 5;
-
+    public $searchSuccessCoto = false;
+    public $searchSuccessMaxiconsumo = false;
+    private $searchTimeLimit = 10;
 
 
 
@@ -35,15 +37,26 @@ class Inicio extends Component
         $this->moreThan5 = false;
         $this->productsShown = 5;
 
-        //search in every supported store
-        // try{
-        //     $this->searchCoto();
-        // }
-        // catch(Exception $e){
+        $this->searchSuccessCoto = false;
+        $this->searchSuccessMaxiconsumo = false;
+        
 
-        // }
+        // search in every supported store
+        try{
+            $this->searchCoto();
+            $this->searchSuccessCoto = true;
+        }catch(Exception $e){
+            $this->searchSuccessCoto = false;
+        }
+        
+        try{
+            $this->searchMaxiconsumo();
+            $this->searchSuccessMaxiconsumo = true;
+        }catch(Exception $e){
+            $this->searchSuccessMaxiconsumo = false;
+        }
 
-        $this->searchMaxiconsumo();
+        $this->searchTest();
 
         //final step and show products
         $this->prepareAndShow();
@@ -51,6 +64,7 @@ class Inicio extends Component
 
     public function searchCoto()
     {
+        set_time_limit($this->searchTimeLimit);
         $prods = [];
         $storeName = 'Coto';
         $mayoristPrice = 'non mayorist';
@@ -83,10 +97,10 @@ class Inicio extends Component
                 $img = $crawlerProd->filter("[class='atg_store_productImage'] > img")->attr('src');
                 $discountText = $crawlerProd->filter("[class='info_discount']")->children()->text();
                 if ($discountText == $price) {
-                    $discount = 'No';
+                    $discount = 'no';
                     $discountText = 'None';
                 } else {
-                    $discount = 'Yes';
+                    $discount = 'yes';
                     $discountText = strstr($discountText, 'OFERTA');
                 }
                 $this->loadProd($name, $price, $storeName, $img, $discount, $discountText, $mayoristPrice);
@@ -98,6 +112,7 @@ class Inicio extends Component
 
     public function searchMaxiconsumo()
     {
+        set_time_limit($this->searchTimeLimit);
         $storeName = 'Maxiconsumo';
         //store does not support discounts
         $discount = 'no';
@@ -136,7 +151,15 @@ class Inicio extends Component
                 $this->loadProd($name, $price, $storeName, $img, $discount, $discountText, $mayoristPrice);
             }
         }
-        dd($this->productsComplete);
+    }
+
+    public function searchTest(){
+        set_time_limit($this->searchTimeLimit);
+        $browserNonHeadless = new HttpBrowser(HttpClient::create());
+
+        $crawler = $browserNonHeadless->request('GET', 'https://www.masonline.com.ar/' . $this->product . '?_q=' . $this->product . '&map=ft');
+
+        dd($crawler->filter("[class='vtex-product-summary-2-x-productBrand vtex-product-summary-2-x-brandName t-body']")->text());
     }
 
     public function checkIfSpecific($name)
