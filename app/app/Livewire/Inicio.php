@@ -56,6 +56,10 @@ class Inicio extends Component
             $this->searchSuccessMaxiconsumo = false;
         }
 
+
+        //ADD TRY CATCH AND ERROR MESSAGE
+        $this->searchSodimac();
+
         //final step and show products
         $this->prepareAndShow();
     }
@@ -149,6 +153,46 @@ class Inicio extends Component
                 $this->loadProd($name, $price, $storeName, $img, $discount, $discountText, $mayoristPrice);
             }
         }
+    }
+
+    public function searchSodimac(){
+        set_time_limit($this->searchTimeLimit);
+        $storeName = 'Sodimac';
+        $mayoristPrice = 'non mayorist';
+        $browserNonHeadless = new HttpBrowser(HttpClient::create());
+
+        $crawler = $browserNonHeadless->request('GET', 'https://www.sodimac.com.ar/sodimac-ar/search?Ntt=' . $this->product . '');
+
+        foreach($crawler->filter("[class='jsx-2974854745 product ie11-product-container']") as $prod){
+            $crawlerProd = new Crawler($prod);
+            //brand + name
+            $name = ''.$crawlerProd->filter("[class='jsx-2974854745 product-brand']")->text().' '.$crawlerProd->filter("[class='jsx-2974854745 product-title']")->text().'';
+
+            if($this->checkIfSpecific($name)){
+                $price = $crawlerProd->filter("[class='jsx-1747766189']")->text();  
+                //Images dont load all in one go so its imposible to get the ones for the lowest products in the list
+                try{
+                    $img = $crawlerProd->filter("[class='image-base image-contain ie11-image-contain ']")->attr('src');
+                }
+                catch(exception $e){
+                    $img = 'notFound';
+                }
+
+
+                try{
+                    //add discount porcentage and old price
+                    $discountText = ''.$crawlerProd->filter("[class='jsx-3805109188 badge  promotion-badge jsx-964332812 discount-badge']")->text().' Antes:'.$crawlerProd->filter("[class='jsx-1747766189']")->text().'';
+                    $discount = 'yes';
+                }
+                catch(exception $e){
+                    $discountText = 'none';
+                    $discount = 'no';
+                }
+                
+                $this->loadProd($name, $price, $storeName, $img, $discount, $discountText, $mayoristPrice);
+            }
+        }
+        
     }
 
     public function checkIfSpecific($name)
