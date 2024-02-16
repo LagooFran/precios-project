@@ -20,9 +20,9 @@ class Inicio extends Component
     public $productsShown = 5;
     public $searchSuccessCoto = false;
     public $searchSuccessMaxiconsumo = false;
+    public $searchSuccessSodimac = false;
     private $searchTimeLimit = 10;
-
-
+    
 
     public function render()
     {
@@ -39,6 +39,7 @@ class Inicio extends Component
 
         $this->searchSuccessCoto = false;
         $this->searchSuccessMaxiconsumo = false;
+        $this->searchSuccessSodimac = false;
         
 
         // search in every supported store
@@ -56,9 +57,15 @@ class Inicio extends Component
             $this->searchSuccessMaxiconsumo = false;
         }
 
+        try{
+            $this->searchSodimac();
+            $this->searchSuccessSodimac = true;
+        }catch(Exception $e){
+            $this->searchSuccessSodimac = false;
+        }
 
-        //ADD TRY CATCH AND ERROR MESSAGE
-        $this->searchSodimac();
+        $this->searchLaAnonima();
+        
 
         //final step and show products
         $this->prepareAndShow();
@@ -126,7 +133,7 @@ class Inicio extends Component
 
         foreach ($crawler->filter("[class='list-item item']") as $prod) {
             $crawlerProd = new Crawler($prod);
-            $name = $crawlerProd->filter("[class='product-item-link']")->text();
+            $name = ucwords(strtolower($crawlerProd->filter("[class='product-item-link']")->text()));
             
             if($this->checkIfSpecific($name)){
                 $price = $crawlerProd->filter("[class='price-box price-final_price']")->text();
@@ -193,6 +200,26 @@ class Inicio extends Component
             }
         }
         
+    }
+
+    public function searchLaAnonima(){
+        set_time_limit($this->searchTimeLimit);
+        $prods = [];
+        $storeName = 'La Anonima';
+        $mayoristPrice = 'non mayorist';
+        $browserNonHeadless = new HttpBrowser(HttpClient::create());
+
+        $crawler = $browserNonHeadless->request('GET', 'https://supermercado.laanonimaonline.com/buscar?pag=1&clave=' . $this->product . '');
+
+        foreach($crawler->filter("[class='producto especial item text_center centrar_img fijar cuadro clearfix ']") as $prod){
+            array_push($prods, $prod);
+        }
+        foreach($crawler->filter("[class='producto item text_center centrar_img fijar cuadro clearfix ']") as $prod){
+            array_push($prods, $prod);
+        }
+        //a lot of prods being fetched ---solution??
+        dd($prods);
+
     }
 
     public function checkIfSpecific($name)
