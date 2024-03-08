@@ -43,28 +43,8 @@ class Inicio extends Component
         
 
         // search in every supported store
-        try{
-            $this->searchCoto();
-            $this->searchSuccessCoto = true;
-        }catch(Exception $e){
-            $this->searchSuccessCoto = false;
-        }
-        
-        try{
-            $this->searchMaxiconsumo();
-            $this->searchSuccessMaxiconsumo = true;
-        }catch(Exception $e){
-            $this->searchSuccessMaxiconsumo = false;
-        }
-
-        try{
-            $this->searchSodimac();
-            $this->searchSuccessSodimac = true;
-        }catch(Exception $e){
-            $this->searchSuccessSodimac = false;
-        }
-
-        $this->searchLaAnonima();
+     
+        $this->searchMeli();
         
 
         //final step and show products
@@ -202,23 +182,30 @@ class Inicio extends Component
         
     }
 
-    public function searchLaAnonima(){
+    public function searchMeli(){
         set_time_limit($this->searchTimeLimit);
-        $prods = [];
-        $storeName = 'La Anonima';
+        $storeName = 'Mercado Libre';
         $mayoristPrice = 'non mayorist';
+        $img = '';
+        //discounts not supported
+        $discount = 'no';
+        $discountText = 'none';
         $browserNonHeadless = new HttpBrowser(HttpClient::create());
 
-        $crawler = $browserNonHeadless->request('GET', 'https://supermercado.laanonimaonline.com/buscar?pag=1&clave=' . $this->product . '');
+        $crawler = $browserNonHeadless->request('GET', 'https://listado.mercadolibre.com.ar/'. $this->product .'#D[A:'. $this->product .']');
 
-        foreach($crawler->filter("[class='producto especial item text_center centrar_img fijar cuadro clearfix ']") as $prod){
-            array_push($prods, $prod);
+        foreach($crawler->filter("[class='andes-card ui-search-result ui-search-result--core andes-card--flat andes-card--padding-16']") as $prod){
+
+            $crawlerProd = new Crawler($prod);
+            $name = $crawlerProd->filter("[class='ui-search-item__title']")->text();
+            if($this->checkIfSpecific($name)){
+
+               $price = $crawler->filter("[class='andes-money-amount__fraction']")->text();
+               //images not working properly
+            }
+
+            $this->loadProd($name, $price, $storeName, $img, $discount, $discountText, $mayoristPrice);
         }
-        foreach($crawler->filter("[class='producto item text_center centrar_img fijar cuadro clearfix ']") as $prod){
-            array_push($prods, $prod);
-        }
-        //a lot of prods being fetched ---solution??
-        dd($prods);
 
     }
 
